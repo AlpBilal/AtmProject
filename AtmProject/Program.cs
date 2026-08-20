@@ -5,11 +5,16 @@ using System.Drawing;
 using System.Drawing.Imaging;
 
 List<User> users = [
-    new User("Alp", 5, "abcd", 4524, 100.24M), 
+    new ("Alp", 5, "abcd", 4524, 100.24M), 
     new ("bh", 4, "bscd", 4526, 100.25M),
     new ("dh", 3, "bscd", 4524, 100.25M)
     ];
 List<Transaction> transactions = new List<Transaction>();
+List<VotingCategory> votes = [
+    new ("Comedy"),
+    new ("Sci-fi"),
+    new ("Drama"),
+];
 bool open = true;
 
     while (open)
@@ -63,7 +68,7 @@ bool open = true;
                 {
                     Format = ZXing.BarcodeFormat.QR_CODE
                 };
-                var image = writer.Write(name);
+                using var image = writer.Write(name);
                 var filePath = @"c:\Users\Alpbilal.basar\Downloads\username-qr.png";
                 image.Save(filePath, ImageFormat.Png);
                 Console.WriteLine($"QR code saved to {filePath}");
@@ -86,7 +91,7 @@ bool open = true;
         bool atmaction = true;
         while (atmaction)
         {
-            Console.WriteLine("Welcome " + name + " what would you like to do?:\n1.Withdraw money\n2. Deposit money\n3. pay\n4. exit\n5. End of day");
+            Console.WriteLine("Welcome " + name + " what would you like to do?:\n1.Withdraw money\n2. Deposit money\n3. pay\n4. exit\n5. End of day\n6. Voting");
             int option = Convert.ToInt32(Console.ReadLine());
             if (option == 1)
             {
@@ -159,6 +164,27 @@ bool open = true;
                 }
 
             }
+            else if (option == 6)
+            {
+                Console.WriteLine("What category do you like?");
+                int i= 0;
+                
+                foreach(VotingCategory vote in votes)
+                {
+                    Console.WriteLine(i + ". " + vote.category);
+                }
+                var secim = Convert.ToInt32(Console.ReadLine());
+                switch (secim){
+                case 0:
+                votes
+                break;
+                case 1:
+                break;
+                case 2:
+                break;
+                }
+                
+            }
             else
             {
                 Console.WriteLine(option + " option is not valid try again!");
@@ -169,7 +195,4 @@ bool open = true;
         transactions.Add(new Transaction(0, false, "Fraud"));
     }
 }
-
-
-
 
