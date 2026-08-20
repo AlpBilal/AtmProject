@@ -161,6 +161,14 @@ bool open = true;
                     {
                         writer.WriteLine($"Action: {t.actionName}, Amount: {t.amount}, Success: {t.work}, Date: {t.date}");
                     }
+                    decimal totalvotes = 0;
+                    
+                    foreach (VotingCategory vote in votes)
+                    {
+                        totalvotes = vote.voteCount;
+                        writer.WriteLine($"{vote.category} : {vote.voteCount}, Percentage : {(vote.voteCount / totalvotes) * 100}");
+                    }
+                    writer.WriteLine("Total votes: " + totalvotes);
                 }
 
             }
@@ -172,17 +180,10 @@ bool open = true;
                 foreach(VotingCategory vote in votes)
                 {
                     Console.WriteLine(i + ". " + vote.category);
+                    i++;
                 }
                 var secim = Convert.ToInt32(Console.ReadLine());
-                switch (secim){
-                case 0:
-                votes
-                break;
-                case 1:
-                break;
-                case 2:
-                break;
-                }
+                votes[secim].voteCount++;
                 
             }
             else
