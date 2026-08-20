@@ -165,8 +165,13 @@ bool open = true;
                     
                     foreach (VotingCategory vote in votes)
                     {
-                        totalvotes = vote.voteCount;
-                        writer.WriteLine($"{vote.category} : {vote.voteCount}, Percentage : {(vote.voteCount / totalvotes) * 100}");
+                        totalvotes += vote.voteCount;
+                        writer.WriteLine($"{vote.category} : {vote.voteCount}");
+                    }
+                    foreach (VotingCategory vote in votes)
+                    {
+                        
+                        writer.WriteLine($"{vote.category}'s Percentage : {(vote.voteCount / totalvotes) * 100}");
                     }
                     writer.WriteLine("Total votes: " + totalvotes);
                 }
