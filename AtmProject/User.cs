@@ -28,20 +28,39 @@ namespace AtmProject
         public void pay(decimal amount)
         {
 
-            this.Balance = this.Balance - amount;
+            if(amount <= 0){
+            Console.WriteLine("The money you wish to pay is not enough \nTry again");
+            }
+            else
+            {
+                this.Balance = this.Balance - amount;
+            }
 
 
         }
         public void Withdraw(decimal amount)
         {
 
-
-            this.Balance = this.Balance - amount;
+            if(amount <= 0){
+            Console.WriteLine("The money you wish to withdraw is not enough \nTry again");
+            }
+            else
+            {
+                this.Balance = this.Balance - amount;
+            }
         }
+
+        
         public void Deposit(decimal amount)
         {
 
-            this.Balance = this.Balance + amount;
+            if(amount <= 0){
+            Console.WriteLine("The money you wish to Deposit is not enough \nTry again");
+            }
+            else
+            {
+                this.Balance = this.Balance + amount;
+            }
         }
 
 

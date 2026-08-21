@@ -17,47 +17,84 @@ List<VotingCategory> votes = [
 ];
 bool open = true;
 
+
+// if (int.TryParse(Console.ReadLine(), out int parsedPIN))
+//         {
+//             PIN = parsedPIN;
+//         }
+//         else
+//         {
+//             Console.WriteLine("Invalid PIN format. Please enter a numeric value.");
+//             break;
+//         }
+
     while (open)
     {
         Console.WriteLine("How would you like to login...\n1. name and PIN\n2.qrcode scan\n3.get a qrcode");
-        var choice = Convert.ToInt32(Console.ReadLine());
+        var Choice =string.Empty;
+        
         var name = string.Empty;
         var PIN = 0;
         User activeUser = null;
-        
+        if(!int.TryParse(Console.ReadLine(), out int choice))
+        {
+           Console.WriteLine("Invalid input. Please enter a number.");
+           continue;
+        }
         switch (choice){
         case 1:
         Console.WriteLine("Your name: ");
         name= Console.ReadLine();
         Console.WriteLine("Your PIN: ");
-        PIN = Convert.ToInt32(Console.ReadLine());
+        
+        if (int.TryParse(Console.ReadLine(), out int parsedPIN))
+        {
+            PIN = parsedPIN;
+        }
+        else
+        {
+            Console.WriteLine("Invalid PIN format. Please enter a numeric value.");
+            break;
+        }
         activeUser = users.FirstOrDefault(u => u.Username == name && u.PIN == PIN);
         break;
         case 2:{
         var reader = new BarcodeReader();
-        using var barcodeBitmap = (Bitmap)Image.FromFile(@"c:\Users\Alpbilal.basar\Downloads\username-qr.png");
-        var decode = reader.Decode(barcodeBitmap);
         
-        if (decode != null)
-                {
-                    
-                    var RealUser = users.FirstOrDefault(u => u.Username == decode.Text);
-                    if(RealUser != null){
-                        activeUser = RealUser;
-                        name = decode.Text;
-                        Console.WriteLine("Congrats you logged in");
+        string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        string filePath = Path.Combine(downloadsPath, "username-qr.png");
+        
+        try{
+            using var barcodeBitmap = (Bitmap)Image.FromFile(filePath);
+            var decode = reader.Decode(barcodeBitmap);
+      
+            if (decode != null)
+                    {
+                        
+                        var RealUser = users.FirstOrDefault(u => u.Username == decode.Text);
+                        if(RealUser != null){
+                            activeUser = RealUser;
+                            name = decode.Text;
+                            Console.WriteLine("Congrats you logged in");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not a user");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Not a user");
+                        Console.WriteLine("No QR code could be read.");
                     }
-                }
-                else
-                {
-                    Console.WriteLine("No QR code could be read.");
-                }
+            }
+          
+        catch (FileNotFoundException)
+        {
+            Console.WriteLine($"QR code file not found at {filePath}");
+            break;
         }
         break;
+        }
         case 3:
         Console.WriteLine("Your name: ");
         name= Console.ReadLine();
@@ -69,7 +106,11 @@ bool open = true;
                     Format = ZXing.BarcodeFormat.QR_CODE
                 };
                 using var image = writer.Write(name);
-                var filePath = @"c:\Users\Alpbilal.basar\Downloads\username-qr.png";
+                
+                // CHANGE 2: Used the exact same dynamic path here to save the file
+                string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                string filePath = Path.Combine(downloadsPath, "username-qr.png");
+                
                 image.Save(filePath, ImageFormat.Png);
                 Console.WriteLine($"QR code saved to {filePath}");
             }
@@ -92,11 +133,22 @@ bool open = true;
         while (atmaction)
         {
             Console.WriteLine("Welcome " + name + " what would you like to do?:\n1.Withdraw money\n2. Deposit money\n3. pay\n4. exit\n5. End of day\n6. Voting");
-            int option = Convert.ToInt32(Console.ReadLine());
-            if (option == 1)
+            int option = 0;
+            if (!int.TryParse(Console.ReadLine(), out option))
+            {
+                Console.WriteLine("Invalid input. Please enter a number.");
+                continue;
+            }
+            else if (option == 1)
             {
                 Console.WriteLine("How much would you like to withdraw from your account?: ");
-                decimal amount = Convert.ToDecimal(Console.ReadLine());
+                decimal amount = 0;
+                if (!decimal.TryParse(Console.ReadLine(), out amount))
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid decimal number.");
+                    continue;
+                }
+
                 if (amount > activeUser.Balance)
                 {
                     Console.WriteLine("The money you wish to withdraw is more than your account has...\nTry again");
@@ -112,7 +164,12 @@ bool open = true;
             else if (option == 2)
             {
                 Console.WriteLine("How much would you like to deposit to your account?: ");
-                decimal amount = Convert.ToDecimal(Console.ReadLine());
+                decimal amount = 0;
+                if (!decimal.TryParse(Console.ReadLine(), out amount))
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid decimal number.");
+                    continue;
+                }
                 if (amount <= 0)
                 {
                     Console.WriteLine("The money you wish to deposit is not enough \nTry again");
@@ -129,7 +186,12 @@ bool open = true;
             else if (option == 3)
             {
                 Console.WriteLine("How much would you like to pay from your account?: ");
-                decimal amount = Convert.ToDecimal(Console.ReadLine());
+                decimal amount = 0;
+                if (!decimal.TryParse(Console.ReadLine(), out amount))
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid decimal number.");
+                    continue;
+                }
                 if (amount > activeUser.Balance)
                 {
                     Console.WriteLine("The money you wish to pay is more than your account has...\nTry again");
@@ -170,8 +232,8 @@ bool open = true;
                     }
                     foreach (VotingCategory vote in votes)
                     {
-                        
-                        writer.WriteLine($"{vote.category}'s Percentage : {(vote.voteCount / totalvotes) * 100}");
+                        decimal percentage = totalvotes > 0 ? (vote.voteCount / totalvotes) * 100 : 0;
+                        writer.WriteLine($"{vote.category}'s Percentage : {percentage}%");
                     }
                     writer.WriteLine("Total votes: " + totalvotes);
                 }
@@ -187,9 +249,17 @@ bool open = true;
                     Console.WriteLine(i + ". " + vote.category);
                     i++;
                 }
+                try{
                 var secim = Convert.ToInt32(Console.ReadLine());
                 votes[secim].voteCount++;
-                
+                }
+                catch(ArgumentOutOfRangeException)
+                {
+                    Console.WriteLine("Invalid selection. Please try again.");
+                }
+                catch (FormatException){
+                Console.WriteLine("You must enter a number!");
+                }
             }
             else
             {
@@ -201,4 +271,3 @@ bool open = true;
         transactions.Add(new Transaction(0, false, "Fraud"));
     }
 }
-
